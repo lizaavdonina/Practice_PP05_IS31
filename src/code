@@ -1,0 +1,117 @@
+using System;
+using System.Collections.Generic;
+
+namespace ToolWearMonitoring
+{
+    // Класс, представляющий режущий инструмент
+    public class Tool
+    {
+        public string ToolId { get; set; } // Уникальный идентификатор инструмента
+        public string Type { get; set; }   // Тип инструмента (например, фреза, сверло)
+        public double WearLevel { get; set; } // Уровень износа (например, в процентах)
+
+        public Tool(string toolId, string type, double wearLevel)
+        {
+            ToolId = toolId;
+            Type = type;
+            WearLevel = wearLevel;
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {ToolId}, Тип: {Type}, Износ: {WearLevel:F2}%";
+        }
+    }
+
+    // Класс, представляющий подсистему хранения данных
+    public class ToolDatabase
+    {
+        private List<Tool> tools = new List<Tool>(); // Список для хранения инструментов
+
+        // Метод для добавления нового инструмента
+        public void AddTool(Tool tool)
+        {
+            tools.Add(tool);
+            Console.WriteLine($"Инструмент {tool.ToolId} добавлен.");
+        }
+
+        // Метод для удаления инструмента по ID
+        public void RemoveTool(string toolId)
+        {
+            Tool toolToRemove = tools.Find(tool => tool.ToolId == toolId);
+            if (toolToRemove != null)
+            {
+                tools.Remove(toolToRemove);
+                Console.WriteLine($"Инструмент {toolId} удален.");
+            }
+            else
+            {
+                Console.WriteLine($"Инструмент {toolId} не найден.");
+            }
+        }
+
+        // Метод для обновления уровня износа инструмента
+        public void UpdateWearLevel(string toolId, double newWearLevel)
+        {
+            Tool toolToUpdate = tools.Find(tool => tool.ToolId == toolId);
+            if (toolToUpdate != null)
+            {
+                toolToUpdate.WearLevel = newWearLevel;
+                Console.WriteLine($"Уровень износа инструмента {toolId} обновлен до {newWearLevel:F2}%.");
+            }
+            else
+            {
+                Console.WriteLine($"Инструмент {toolId} не найден.");
+            }
+        }
+
+        // Метод для получения информации об инструменте по ID
+        public Tool GetTool(string toolId)
+        {
+            return tools.Find(tool => tool.ToolId == toolId);
+        }
+
+        // Метод для вывода списка всех инструментов
+        public void ListAllTools()
+        {
+            if (tools.Count == 0)
+            {
+                Console.WriteLine("В базе данных нет инструментов.");
+                return;
+            }
+
+            Console.WriteLine("Список инструментов:");
+            foreach (Tool tool in tools)
+            {
+                Console.WriteLine(tool);
+            }
+        }
+    }
+
+    // Главный класс программы
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            ToolDatabase db = new ToolDatabase();
+
+            // Пример использования
+            db.AddTool(new Tool("F001", "Фреза", 10.5));
+            db.AddTool(new Tool("D002", "Сверло", 5.2));
+
+            db.ListAllTools();
+
+            db.UpdateWearLevel("F001", 12.8);
+
+            Tool tool = db.GetTool("D002");
+            if (tool != null)
+            {
+                Console.WriteLine($"Информация об инструменте D002: {tool}");
+            }
+
+            db.RemoveTool("D002");
+
+            db.ListAllTools();
+        }
+    }
+}
